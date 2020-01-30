@@ -1,10 +1,6 @@
 <?php
 
 session_start();
-// $db['db_host'] = 'localhost';
-// $db['db_user'] = 'oluakain';
-// $db['db_pass'] = 'e4T5q!n&yzUD';
-// $db['db_name'] = 'oluakain_portal';
 
 $db['db_host'] = 'localhost';
 $db['db_user'] = 'root';
