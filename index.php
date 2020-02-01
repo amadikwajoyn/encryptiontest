@@ -1,13 +1,9 @@
 <?php
 ob_start();
-
 require_once('path/db.php');
-
 if (isset($_POST['login'])) {
   $arr = [];
-
     $password = $_POST['password'];
-
     $sql = $conn->prepare("SELECT * FROM `profile` WHERE email = ?");
     
     $sql->bind_param("s", $_POST['email']);
