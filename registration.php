@@ -2,32 +2,37 @@
 
 include_once('path/db.php');
 	if (isset($_POST['register'])) {
-	    $name = mysqli_real_escape_string($conn, $_POST['fullname']);
-	    $email = mysqli_real_escape_string($conn, $_POST['email']);
-	    $phone = mysqli_real_escape_string($conn, $_POST['phone']);
-	    $password = mysqli_real_escape_string($conn, $_POST['password']);
+	    // $name = mysqli_real_escape_string($conn, $_POST['fullname']);
+	    // $email = mysqli_real_escape_string($conn, $_POST['email']);
+	    // $phone = mysqli_real_escape_string($conn, $_POST['phone']);
+	    $password = $_POST['password'];
 	    $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
 
-	  $sql = "SELECT * FROM `profile` WHERE `email` = '$email' or `phone` = '$phone';";
-	   $query=mysqli_query($conn,$sql);
-	     $numrow=mysqli_num_rows($query);
+	  	$sql = $conn->prepare("SELECT * FROM profile WHERE email = ? or phone = ?");
+	  	$sql->bind_param("ss", $_POST['email'], $_POST['phone']);
+	  	$sql->execute();
+	  	$numrow = $sql->get_result()->fetch_row();
 	      if($numrow>0){
 	      echo "<script>alert('User Already Exists with Provided Details, Please use a Different Email and Phone Number.');</script>";
  }else{
-	 $sql = "INSERT INTO `profile` (`pass_word`, `fullname`, `phone`, `email`, `gender`, `address`, `lga`, `state`, `nationality`,`image`, `next_of_kin_name`, `next_of_kin_phone`, `next_of_kin_address`, `next_of_kin_email`, `next_of_kin_relationship`, `spon_type`, `spon_name`, `spon_email`, `spon_address`, `spon_phone`) VALUES (?,?, ?, ?, '', '', '', '', '','', '','','', '' ,'', '','','', '' ,'');";
+	 $sql = $conn->prepare("INSERT INTO profile (`pass_word`, `fullname`, `phone`, `email`, `gender`, `address`, `lga`, `state`, `nationality`,`image`, `next_of_kin_name`, `next_of_kin_phone`, `next_of_kin_address`, `next_of_kin_email`, `next_of_kin_relationship`, `spon_type`, `spon_name`, `spon_email`, `spon_address`, `spon_phone`)  VALUES (?,?, ?, ?, '', '', '', '', '','', '','','', '' ,'', '','','', '' ,'')");
+	 $sql->bind_param("ssss", $password_hash, $_POST['fullname'], $_POST['phone'], $_POST['email']);
+	 $sql->execute();
+	 $sql->close();
+
 	 
 	 $stmt = mysqli_stmt_init($conn);
 
-	if (!mysqli_stmt_prepare($stmt, $sql)) {
-		echo "Sql error";
-	} else {
-		mysqli_stmt_bind_param($stmt, "ssss", $password_hash, $name, $phone, $email);
-		mysqli_stmt_execute($stmt);
-    	$_SESSION['fullname'] = $name;
-    	$_SESSION['email'] = $email;
-		echo "<script>window.location='index.php'</script>";
-	}
+	// if (!mysqli_stmt_prepare($stmt, $sql)) {
+	// 	echo "Sql error";
+	// } else {
+	// 	mysqli_stmt_bind_param($stmt, "ssss", $password_hash, $name, $phone, $email);
+	// 	mysqli_stmt_execute($stmt);
+ //    	$_SESSION['fullname'] = $name;
+ //    	$_SESSION['email'] = $email;
+	// 	echo "<script>window.location='index.php'</script>";
+	// }
 }
 	}
 

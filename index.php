@@ -4,24 +4,21 @@ ob_start();
 require_once('path/db.php');
 
 if (isset($_POST['login'])) {
-	$email = $_POST['email'];
-    $password = $_POST['password'];
-    $sql = "SELECT * FROM `profile` WHERE `email` = ?";
-    
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo 'Sql Statement failed';
-    } else {
-        mysqli_stmt_bind_param($stmt, "s", $email);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+  $arr = [];
 
-        while ($row = mysqli_fetch_assoc($result)) {
+    $password = $_POST['password'];
+
+    $sql = $conn->prepare("SELECT * FROM `profile` WHERE email = ?");
+    
+    $sql->bind_param("s", $_POST['email']);
+    $sql->execute();
+    $result = $sql->get_result();
+    while ($row = $result->fetch_row()) {
+            $arr[] = $row;
             if (password_verify($password, $row['pass_word'])) {
                 # code...
                 $id=$row['sn'];
-                $email=$rowt['email'];
-                // $role=$result['role'];
+                $email=$row['email'];
                 $_SESSION['sn'] = $id;
                 $_SESSION['email'] = $email;
         
@@ -31,7 +28,10 @@ if (isset($_POST['login'])) {
               echo "<script>alert('".$message."');</script>";
                 
              }
-        }
+      }
+      if (!$arr) exit('No row');
+      var_export($arr);
+      $sql->close();
     }
 
 
@@ -65,7 +65,7 @@ if (isset($_POST['login'])) {
     //  }
       
     //  }
-}
+
 ?>
 <!DOCTYPE html>
 <head>
